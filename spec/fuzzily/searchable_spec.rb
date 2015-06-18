@@ -171,6 +171,18 @@ describe Fuzzily::Searchable do
         3.times { subject.create!(:name => 'Paris') }
         subject.find_by_fuzzy_name('Paris', :offset => 2).length.should == 1
       end
+
+      it 'scopes to ids' do
+        subject.fuzzily_searchable :name
+        @paris =   subject.create!(:name => 'Paris')
+        @palma =   subject.create!(:name => 'Palma de Majorca')
+        @palmyre = subject.create!(:name => 'La Palmyre')
+
+        ids = [@paris.id]
+
+        subject.find_by_fuzzy_name('Piris', ids: ids).should include @paris
+        subject.find_by_fuzzy_name('Paradise', ids: ids).should_not include @palma, @palmyre
+      end
     end
   end
 
